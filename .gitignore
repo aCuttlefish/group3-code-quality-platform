@@ -1,0 +1,16 @@
+.env
+.env.*
+!.env.example
+data/
+tmp/
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+*.log
+*.zip
+*.docx
+*.pdf
+~$*
+docs/task_sheet_work/
+docs/report_revision_*/

@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>FR-04 · AI 用例实验台</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="/" aria-label="AI 用例实验台首页"><span class="brand-icon">✓</span><span>VERIFY<span class="brand-sub">软件理论与工程 · 第 3 组</span></span></a>
+      <button id="toggle-history" class="button secondary mobile-history-toggle" type="button" aria-controls="history" aria-expanded="false">任务记录 ▾</button>
+      <div class="sidebar-label">工作空间</div>
+      <div class="nav-active"><span>◈</span> AI 用例实验台 <span class="nav-chip">FR-04</span></div>
+      <div class="history-heading"><span class="sidebar-label">任务记录</span><button id="refresh-history" class="icon-button" type="button" aria-label="刷新任务记录" title="刷新任务记录">↻</button></div>
+      <nav id="history" class="history" aria-label="历史任务"><p class="sidebar-empty">生成后，任务会保存在这里。</p></nav>
+      <div class="sidebar-footer"><span class="connection-dot" id="connection-dot"></span><span id="connection-text">连接本地服务…</span><span class="footer-note">输入、用例与报告按任务保存</span></div>
+    </aside>
+
+    <main>
+      <header class="topbar"><span>课程实验 / 可验证需求</span><span class="local-badge">LOCAL WORKSPACE</span></header>
+      <div class="main-content">
+        <div class="page-heading"><div><div class="eyebrow">REQUIREMENT → TEST → EVIDENCE</div><h1>把需求变成可验证的用例<span class="title-dot">.</span></h1><p class="subtitle">根据功能说明生成测试，核对预期，再查看实际执行结果。</p></div><span class="version-badge">FR-04 / MVP</span></div>
+
+        <ol class="steps" aria-label="操作流程"><li class="step current" id="step-input"><span class="step-number">1</span><span>提交代码与需求<small>保留输入快照</small></span></li><li class="step" id="step-review"><span class="step-number">2</span><span>核对生成的用例<small>预期关联说明条款</small></span></li><li class="step" id="step-run"><span class="step-number">3</span><span>确认运行与报告<small>记录真实执行结果</small></span></li></ol>
+
+        <div id="global-alert" class="alert error" role="alert" hidden></div>
+        <section class="config-strip" aria-label="模型配置"><span class="service-icon">✦</span><div><strong id="config-state">正在读取 DeepSeek 配置</strong><span id="config-detail">密钥仅从服务端环境变量或 .env 读取。</span></div><button class="text-button" id="refresh-config" type="button">刷新配置</button></section>
+
+        <section class="workspace-panel" aria-labelledby="input-heading">
+          <div class="section-heading"><div><span class="section-kicker">01 / INPUT</span><h2 id="input-heading">准备测试输入</h2></div><div class="sample-buttons" aria-label="验收样例"><button id="sample-s1" class="button sample selected" type="button">S1 · ≥99 免邮</button><button id="sample-s2" class="button sample" type="button">S2 · >99 免邮</button></div></div>
+          <div class="source-upload"><input id="source-file" type="file" accept=".py,text/x-python" hidden><button id="upload-source" class="button secondary" type="button">上传 Python 文件 ↑</button><div><strong id="source-filename">未上传文件 · 可直接编辑代码</strong><p id="upload-note" role="status">仅支持 .py · 最大 80 KB · UTF-8 或带编码声明，载入后统一为 UTF-8</p></div></div>
+          <div class="editor-grid">
+            <div class="editor-card"><label class="editor-heading" for="code"><span><span class="file-dot"></span> 被测代码</span><span class="language-tag">Python · 单文件</span></label><textarea id="code" class="code-editor" spellcheck="false" aria-describedby="code-help"></textarea><div class="editor-foot"><span id="code-help">独立纯函数 · 无外部依赖 · 最多 200 行</span><span id="line-count">0 行</span></div></div>
+            <div class="editor-card spec-card"><div class="editor-heading"><span><span class="file-dot teal"></span> 功能说明</span><span class="language-tag" id="spec-source-label">手写说明</span></div><fieldset class="spec-mode-switch"><legend class="sr-only">功能说明来源</legend><label><input id="spec-mode-manual" type="radio" name="spec-source" value="manual" checked> 手写说明</label><label><input id="spec-mode-comments" type="radio" name="spec-source" value="comments"> 使用代码注释</label></fieldset><div id="manual-spec-panel"><label class="sr-only" for="spec">手写功能说明</label><textarea id="spec" class="spec-editor" spellcheck="false" maxlength="2000" aria-describedby="spec-help" placeholder="描述函数应该做什么，包括输入范围、预期返回值与异常规则。无需填写 R1、R2 编号。"></textarea><div class="editor-foot"><span id="spec-help">普通文字即可 · 写清输入、返回值与异常</span><span id="char-count">0 / 2000</span></div></div><div id="comments-spec-panel" hidden><div class="comments-toolbar"><span id="comments-state" role="status">尚未提取注释</span><button id="refresh-comments" class="text-button" type="button">重新提取 ↻</button></div><pre id="comments-preview" class="comments-preview" tabindex="0" aria-label="从当前代码提取的注释，只读"></pre><div class="editor-foot"><span>读取注释和文档字符串作为功能说明</span><span>只读预览</span></div></div></div>
+          </div>
+          <div class="input-options"><div class="field"><label for="function-name">目标函数</label><input id="function-name" value="shipping_fee" autocomplete="off" spellcheck="false"></div><div class="field field-small"><label for="target-count">用例数量</label><input id="target-count" type="number" min="1" max="10" value="7"></div><p class="sample-note">样例代码故意包含 <code>99</code> 元边界缺陷。切换 S1 / S2 时使用对应的手写说明。</p></div>
+          <div class="generation-actions"><div class="generation-buttons"><button id="generate" class="button primary" type="button"><span aria-hidden="true">✦</span> DeepSeek 生成用例 <span aria-hidden="true">→</span></button><button id="demo" class="button secondary" type="button">演示流程（不调用 AI）</button></div><label class="fault-control"><input id="fault-timeout" type="checkbox"> 模拟生成超时</label></div>
+          <p class="helper-text">真实生成使用环境变量或 <code>.env</code> 中的 <code>DEEPSEEK_API_KEY</code>。演示会载入当前 S1 / S2 的固定样例，用于检查操作流程。</p>
+        </section>
+
+        <section id="empty-state" class="empty-state"><div class="empty-icon">⌘</div><h2>你的第一组用例，从这里开始</h2><p>选择验收样例，或输入自己的纯函数。生成后先核对用例，再确认运行。</p><div class="empty-features"><span>可追溯的需求依据</span><span>运行前人工确认</span><span>真实结果与报告</span></div></section>
+
+        <section id="task-section" class="workspace-panel task-panel" aria-labelledby="task-heading" hidden>
+          <div class="section-heading"><div><span class="section-kicker">02 / TEST CASES</span><h2 id="task-heading">生成与核对</h2></div><span id="task-status" class="status-badge">尚未生成</span></div>
+          <div class="task-metadata"><span id="task-source" class="source-label"></span><span id="task-spec-source"></span><span id="task-id"></span><span id="task-created"></span></div>
+          <div id="task-progress" class="progress-box" role="status" hidden><span class="spinner" aria-hidden="true"></span><div><strong id="progress-title"></strong><p id="progress-detail"></p></div></div>
+          <div id="task-error" class="alert error" role="alert" hidden></div>
+          <div id="task-questions" class="alert warning" hidden></div>
+          <div id="demo-notice" class="alert info" hidden>当前为固定样例演示，未调用 DeepSeek；本次生成不能作为模型生成能力的验收证据。运行结果仍由执行工具实际产生。</div>
+          <div id="input-changed" class="alert warning" hidden>输入已修改。请重新生成用例，或点击任务记录恢复此版本，再确认运行。</div>
+          <details id="effective-spec-details" class="code-details effective-spec"><summary>查看本次生成依据的功能说明 <span id="effective-spec-source"></span></summary><pre id="effective-spec"></pre></details>
+          <div id="case-preview" hidden><div class="table-scroll"><table class="cases-table"><thead><tr><th>用例 / 场景</th><th>输入</th><th>预期结果</th><th>需求依据</th></tr></thead><tbody id="case-rows"></tbody></table></div>
+            <details class="code-details"><summary>查看生成的可执行测试文件 <span>Python</span></summary><pre><code id="test-file"></code></pre></details>
+            <div class="confirm-area"><div><label class="confirm-label"><input id="confirm" type="checkbox"> 我已核对用例，并确认仅运行自有课程样例</label><p class="helper-text">确认绑定当前代码、说明和用例版本。未确认前不会执行被测代码。</p></div><button id="run" class="button primary" type="button" disabled>确认并运行 <span aria-hidden="true">▶</span></button></div>
+          </div>
+          <div class="task-actions"><button id="retry" class="button secondary" type="button" hidden>使用此输入重新生成</button><a id="download-test" class="text-button" href="#" title="运行此测试文件时，需将报告中的被测代码保存为同目录下的 subject.py。" hidden>下载测试文件 ↓</a><a id="download-report" class="text-button" href="#">下载任务与报告 JSON ↓</a></div>
+        </section>
+
+        <section id="results-section" class="workspace-panel" aria-labelledby="results-heading" hidden><div class="section-heading"><div><span class="section-kicker">03 / EXECUTION REPORT</span><h2 id="results-heading">实际执行结果</h2></div><span id="run-duration" class="subtle"></span></div><div id="run-summary" class="run-summary"></div><div class="table-scroll"><table class="results-table"><thead><tr><th>用例</th><th>输入</th><th>结果</th><th>预期</th><th>实际</th><th>说明</th></tr></thead><tbody id="result-rows"></tbody></table></div><details class="code-details"><summary>查看执行日志</summary><pre id="execution-log"></pre></details><p id="confirmation-note" class="helper-text"></p></section>
+
+        <footer class="page-footer"><span class="shield-icon" aria-hidden="true">◇</span><span>执行方式：本地受限子进程，仅限课程样例；非生产安全沙箱。</span><span class="footer-right">可验证 · 可追溯 · 可复现</span></footer>
+      </div>
+    </main>
+  </div>
+</body>
+</html>
